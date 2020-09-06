@@ -1,0 +1,2 @@
+language = "cpp"
+run = "g++ tombraider.cpp -o tombraider"
