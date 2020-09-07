@@ -5,9 +5,13 @@ using namespace std;
 
 int main()
 {
+
     int n;
+
     cin >> n;
-    vector<vector<int> > profs;
+
+    vector<vector<int>> profs;
+
     profs.reserve(n);
 
     for (int i = 0; i < n; i++)
@@ -26,10 +30,16 @@ int main()
     for (int i = 0; i < n - 1; i++)
     {
         // n - 1 eliminations
-        int opus = profs[startIndex][0];
-        int removeIndex = (startIndex + opus + (profs.size() - 1)) % profs.size();
-        profs.erase(profs.begin() + removeIndex);
-        startIndex = removeIndex % profs.size();
+        int opus = profs[0][startIndex];
+        // cout << "Start index: " << startIndex << endl;
+        // cout << "Opus: " << opus << endl;
+        // cout << "Size: " << profs.size() << endl;
+        // cout << "Mod: " << (opus + (profs.size() - 1)) % profs.size() << endl;
+
+        int newIndex = (startIndex + opus + (profs.size() - 1)) % profs.size();
+        // cout << newIndex << endl;
+        profs.erase(profs.begin() + newIndex);
+        startIndex = newIndex % profs.size();
     }
 
     cout << profs[0][1] + 1 << endl;
