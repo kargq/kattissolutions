@@ -20,12 +20,13 @@ class Solution {
             String rowVal = in.next();
             for (int j = 0; j < c; j++) {
                 String strVal = rowVal.substring(j, j + 1);
-                int val = strVal.equals("0") ? 0 : 1;  
+                int val = strVal.equals("0") ? 0 : 1;
                 map[i][j] = val;
                 nodes[i][j] = new Node(i, j);
             }
         }
         int queries = in.nextInt();
+        buildData();
         for (int i = 0; i < queries; i++) {
             resolveQuery();
         }
@@ -60,57 +61,91 @@ class Solution {
 
     }
 
-    public void union(Node node1, Node node2) {
-        node2.parent = node1;
+    void buildData() {
+//        cleanVisited();
+        for (Node[] nodeRow : nodes) {
+            for (Node node : nodeRow) {
+                if (!isVisited(node)) {
+                    debug("Start using: " + node);
+                    debug("================");
+                    nodesQ.add(node);
+                    while (nodesQ.size() > 0) {
+                        Node curr = nodesQ.pop();
+                        union(curr, node);
+                        Node n = curr.n();
+                        Node s = curr.s();
+                        Node e = curr.e();
+                        Node w = curr.w();
+                        // Add unvisited accessible neighbours
+                        addToQ(n);
+                        addToQ(s);
+                        addToQ(e);
+                        addToQ(w);
+                    }
+                }
+            }
+        }
+        debug("==============================================");
+        debug("Data built");
         printSet();
+    }
+
+    public void union(Node node1, Node node2) {
+        Node node1p = ultimateDaddy(node1);
+        node1p.parent = node2;
+//        debug("Union: " + node1 + " + " + node2);
+//        if (node1p.row + node1p.col < node2p.row + node2p.col) {
+//            node2p.parent = node1p;
+//        } else {
+//            node1p.parent = node2p;
+//        }
+//        p
+//        rintSet();
     }
 
     public boolean find(Node node1, Node node2) {
         Node node1p = ultimateDaddy(node1);
         Node node2p = ultimateDaddy(node2);
 
-        if (node1p.equals(node2p)) {
-            debug("It help");
-            return true;
-        }
-        else {
-            return search(node1p, node2p);
-        }
+        return node1p.equals(node2p);
     }
 
     void printSet() {
-        HashMap<Node, List<Node>> nodeMap = new HashMap<>();
-        for(Node[] nodeRow: nodes) {
-            for(Node node: nodeRow) {
-                Node dad = ultimateDaddy(node);
-            }
-        }
-        for(Node[] nodeRow: nodes) {
-            for(Node node: nodeRow) {
-                hj gvman,s Node dad = ultimateDaddy(node);
-                if(nodeMap.containsKey(dad)) {
-                    nodeMap.get(dad).add(node);
-                } else {
-                    List<Node> newList = new ArrayList<>();
-                    newList.add(node);
-                    nodeMap.put(dad, newList);
-                }
-            }
-        }
-        for(Node key: nodeMap.keySet()) {
-            System.out.print(key + ": ");
-            for(Node node : nodeMap.get(key)) {
-                System.out.print(node + ", ");
-            }
-            System.out.println();
-        }
+//        HashMap<Node, List<Node>> nodeMap = new HashMap<>();
+//        for (Node[] nodeRow : nodes) {
+//            for (Node node : nodeRow) {
+//                Node dad = ultimateDaddy(node);
+//            }
+//        }
+//        for (Node[] nodeRow : nodes) {
+//            for (Node node : nodeRow) {
+//                Node dad = ultimateDaddy(node);
+//                if (nodeMap.containsKey(dad)) {
+//                    nodeMap.get(dad).add(node);
+//                } else {
+//                    List<Node> newList = new ArrayList<>();
+//                    newList.add(node);
+//                    nodeMap.put(dad, newList);
+//                }
+//            }
+//        }
+//        for (Node key : nodeMap.keySet()) {
+//            if (nodeMap.get(key).size() > 1) {
+//                System.out.print(key + ": ");
+//                for (Node node : nodeMap.get(key)) {
+//                    System.out.print(node + ", ");
+//                }
+//                System.out.println();
+//            }
+//        }
     }
 
     public Node ultimateDaddy(Node node) {
-        if (node.parent == node) return node;
+        if (node.parent.equals(node)) return node;
         else {
+//            print("Uhh it gets here at least");
             Node result = ultimateDaddy(node.parent);
-            node.parent = result;
+//            node.parent = result;
             return result;
         }
     }
@@ -127,21 +162,21 @@ class Solution {
     }
 
     boolean dfs(Node from, Node target) {
-        if(from == null) {
+        if (from == null) {
             return false;
-        } else if(from.equals(target)) {
+        } else if (from.equals(target)) {
             return true;
         }
         List<Node> sortedNeighbours = from.getNeighbours();
         sortedNeighbours.sort((a, b) -> dist(a, target) - dist(b, target));
-        for(Node curr : sortedNeighbours) {
-            if(isVisited(curr)) continue;
+        for (Node curr : sortedNeighbours) {
+            if (isVisited(curr)) continue;
         }
-        for(Node curr : sortedNeighbours) {
-            if(isVisited(curr)) continue;
+        for (Node curr : sortedNeighbours) {
+            if (isVisited(curr)) continue;
             markVisited(curr);
             union(curr, from);
-            if(dfs(curr, target)) return true;
+            if (dfs(curr, target)) return true;
         }
         return false;
     }
@@ -156,14 +191,15 @@ class Solution {
     }
 
     void cleanVisited() {
-        for(int i = 0; i < r; i++) {
-            for(int j = 0; j < c; j++) {
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
                 visited[i][j] = false;
             }
         }
     }
+
     public boolean bfs(Node from, Node target) {
-        if(from == null) {
+        if (from == null) {
             return false;
         }
         cleanVisited();
@@ -206,7 +242,7 @@ class Solution {
     }
 
     public static void debug(Object o) {
-        System.out.println("DEBUG: " + o.toString());
+//        System.out.println("DEBUG: " + o.toString());
     }
 
     public static void main(String[] args) {
@@ -256,12 +292,12 @@ class Solution {
             return map[row][col];
         }
 
-        List<Node> getNeighbours(){
+        List<Node> getNeighbours() {
             List<Node> result = new ArrayList<>(4);
-            if(n() != null) result.add(n());
-            if(s() != null) result.add(s());
-            if(e() != null) result.add(e());
-            if(w() != null) result.add(w());
+            if (n() != null) result.add(n());
+            if (s() != null) result.add(s());
+            if (e() != null) result.add(e());
+            if (w() != null) result.add(w());
             return result;
         }
 
@@ -276,7 +312,7 @@ class Solution {
 
         @Override
         public String toString() {
-            return "Node [" + row + "," + col + "]";
+            return "Node [" + (row + 1) + "," +(col + 1) + "," + getVal() + "]";
         }
     }
 }
