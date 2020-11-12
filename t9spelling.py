@@ -34,15 +34,14 @@ for case in range(cases):
   line = input()
   line = line.rstrip('\n')
   line = line.rstrip('\r')
-  output = ""
+  output = []
   
   for c in line:
     cmd = num_dict[c]
     digit = cmd[0]
-
-    if output != "" and digit == output[-1]:
-      output += " "
+    if len(output) > 0 and digit == output[-1][-1]:
+      output += [" "]
     
-    output += cmd
+    output += [cmd]
   
-  print("Case #{}: {}".format(case + 1, output))
+  print("Case #{}: {}".format(case + 1, "".join(output)))
